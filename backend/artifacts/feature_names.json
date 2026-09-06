@@ -1,0 +1,22 @@
+[
+  "tenure_months",
+  "monthly_charges",
+  "total_charges",
+  "support_tickets",
+  "last_login_days",
+  "monthly_usage_gb",
+  "num_products",
+  "contract_type_Month-to-Month",
+  "contract_type_One-Year",
+  "contract_type_Two-Year",
+  "payment_method_Bank Transfer",
+  "payment_method_Credit Card",
+  "payment_method_Electronic Check",
+  "payment_method_Mailed Check",
+  "paperless_billing_No",
+  "paperless_billing_Yes",
+  "online_security_No",
+  "online_security_Yes",
+  "tech_support_No",
+  "tech_support_Yes"
+]
