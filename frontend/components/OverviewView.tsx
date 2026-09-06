@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import { MetricCard } from "./MetricCard";
-import { Users, Activity, AlertCircle, DollarSign, ShieldCheck, ArrowRight, CheckSquare, Square } from "lucide-react";
+import { Users, Activity, AlertCircle, DollarSign, ArrowRight } from "lucide-react";
 import { Customer, ModelMetrics } from "@/lib/types";
 
 interface OverviewViewProps {
@@ -19,6 +19,7 @@ interface OverviewViewProps {
   highRiskCustomers: Customer[];
   onSelectCustomer: (cust: Customer) => void;
   onOpenRadar: () => void;
+  isDark?: boolean;
 }
 
 export const OverviewView: React.FC<OverviewViewProps> = ({
@@ -29,16 +30,15 @@ export const OverviewView: React.FC<OverviewViewProps> = ({
   highRiskCustomers,
   onSelectCustomer,
   onOpenRadar,
+  isDark = true,
 }) => {
   const atRiskMrr = summary.high_risk_count * 82.5;
 
-  // Checkbox filters matching reference Activity Over Last 30 Days
   const [filterPageviews, setFilterPageviews] = useState(true);
   const [filterClicks, setFilterClicks] = useState(true);
   const [filterSessions, setFilterSessions] = useState(true);
   const [filterTickets, setFilterTickets] = useState(true);
 
-  // Stacked chart columns (simulating 30-day cohort telemetry with the exact 4 colors)
   const daysData = [
     { red: 14, yellow: 18, green: 25, blue: 20 },
     { red: 18, yellow: 15, green: 30, blue: 22 },
@@ -74,111 +74,117 @@ export const OverviewView: React.FC<OverviewViewProps> = ({
 
   return (
     <div className="space-y-6 w-full">
-      {/* 4 Clean Metric Cards matching Reference design */}
+      {/* 4 Metric Cards */}
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <MetricCard
           title="Active Monitored Users"
           value={summary.total_customers.toLocaleString()}
           deltaText="↑ 12% vs last month"
           deltaType="positive"
-          iconBgColor="bg-[#00C68D]/10 text-[#00C68D]"
+          iconBgColor="bg-[#00C68D]/15 text-[#00C68D]"
           icon={<Users className="h-5 w-5" />}
+          isDark={isDark}
         />
         <MetricCard
           title="Model Health Score"
           value={metrics ? `${(metrics.roc_auc * 100).toFixed(0)}` : "87"}
           deltaText="↑ 8 pts (ROC-AUC: 86.6%)"
           deltaType="positive"
-          iconBgColor="bg-[#0055DA]/10 text-[#0055DA]"
+          iconBgColor="bg-[#0055DA]/15 text-[#0055DA]"
           icon={<Activity className="h-5 w-5" />}
+          isDark={isDark}
         />
         <MetricCard
           title="At-Risk Users"
           value={`${summary.high_risk_count}`}
           deltaText={`↓ ${summary.high_risk_pct}% of customer base`}
           deltaType="warning"
-          iconBgColor="bg-[#FF0052]/10 text-[#FF0052]"
+          iconBgColor="bg-[#FF0052]/15 text-[#FF0052]"
           icon={<AlertCircle className="h-5 w-5" />}
+          isDark={isDark}
         />
         <MetricCard
           title="MRR At Risk"
           value={`$${Math.round(atRiskMrr).toLocaleString()}`}
           deltaText={`Exposure: ${driftStatus} Drift`}
           deltaType="neutral"
-          iconBgColor="bg-[#FFD400]/15 text-[#B45309]"
+          iconBgColor="bg-[#FFD400]/20 text-[#FFD400]"
           icon={<DollarSign className="h-5 w-5" />}
+          isDark={isDark}
         />
       </div>
 
-      {/* Main Activity & Telemetry Stacked Bar Chart (Matching Reference exactly) */}
-      <div className="rounded-2xl bg-white p-6 border border-[#E9E5DC] shadow-[0_1px_4px_rgba(0,0,0,0.03)]">
+      {/* Main Activity Stacked Bar Chart */}
+      <div className={`rounded-2xl p-6 border transition-all ${
+        isDark ? "bg-[#080B12] border-[#182033]" : "bg-white border-[#E9E5DC] shadow-[0_1px_4px_rgba(0,0,0,0.03)]"
+      }`}>
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
           <div>
-            <h3 className="text-sm font-bold text-[#181D27]">
+            <h3 className={`text-sm font-bold ${isDark ? "text-white" : "text-[#181D27]"}`}>
               Activity & Cohort Distribution Over Last 30 Days
             </h3>
-            <p className="text-xs text-[#535862] mt-0.5">
+            <p className={`text-xs mt-0.5 ${isDark ? "text-slate-400" : "text-[#535862]"}`}>
               Live event frequency decomposed across core user telemetry and churn risk factors.
             </p>
           </div>
 
-          {/* Interactive Checkbox Legend with Exact 4 Colors */}
-          <div className="flex flex-wrap items-center gap-4 text-xs text-[#535862]">
+          {/* Interactive Checkbox Legend */}
+          <div className="flex flex-wrap items-center gap-4 text-xs">
             <button
               onClick={() => setFilterPageviews(!filterPageviews)}
               className="flex items-center space-x-1.5"
             >
-              <span className="h-3 w-3 rounded-sm bg-[#FF0052] flex items-center justify-center text-white text-[9px]">
+              <span className="h-3 w-3 rounded-sm bg-[#FF0052] flex items-center justify-center text-white text-[9px] font-bold">
                 {filterPageviews ? "✓" : ""}
               </span>
-              <span className="font-medium text-[#181D27]">High Risk Churn (247)</span>
+              <span className={`font-medium ${isDark ? "text-slate-200" : "text-[#181D27]"}`}>High Risk Churn (247)</span>
             </button>
 
             <button
               onClick={() => setFilterClicks(!filterClicks)}
               className="flex items-center space-x-1.5"
             >
-              <span className="h-3 w-3 rounded-sm bg-[#0055DA] flex items-center justify-center text-white text-[9px]">
+              <span className="h-3 w-3 rounded-sm bg-[#0055DA] flex items-center justify-center text-white text-[9px] font-bold">
                 {filterClicks ? "✓" : ""}
               </span>
-              <span className="font-medium text-[#181D27]">Active Telemetry (582)</span>
+              <span className={`font-medium ${isDark ? "text-slate-200" : "text-[#181D27]"}`}>Active Telemetry (582)</span>
             </button>
 
             <button
               onClick={() => setFilterTickets(!filterTickets)}
               className="flex items-center space-x-1.5"
             >
-              <span className="h-3 w-3 rounded-sm bg-[#00C68D] flex items-center justify-center text-white text-[9px]">
+              <span className="h-3 w-3 rounded-sm bg-[#00C68D] flex items-center justify-center text-white text-[9px] font-bold">
                 {filterTickets ? "✓" : ""}
               </span>
-              <span className="font-medium text-[#181D27]">Retained Cohort (312)</span>
+              <span className={`font-medium ${isDark ? "text-slate-200" : "text-[#181D27]"}`}>Retained Cohort (312)</span>
             </button>
 
             <button
               onClick={() => setFilterSessions(!filterSessions)}
               className="flex items-center space-x-1.5"
             >
-              <span className="h-3 w-3 rounded-sm bg-[#FFD400] flex items-center justify-center text-[#181D27] text-[9px]">
+              <span className="h-3 w-3 rounded-sm bg-[#FFD400] flex items-center justify-center text-[#181D27] text-[9px] font-bold">
                 {filterSessions ? "✓" : ""}
               </span>
-              <span className="font-medium text-[#181D27]">Medium Risk (111)</span>
+              <span className={`font-medium ${isDark ? "text-slate-200" : "text-[#181D27]"}`}>Medium Risk (111)</span>
             </button>
           </div>
         </div>
 
-        {/* Stacked Chart Rendering (Matching Reference Height & Rhythm) */}
-        <div className="relative mt-8 h-48 w-full flex items-end justify-between gap-1.5 pt-4 border-b border-[#F0ECE3]">
+        {/* Stacked Chart */}
+        <div className={`relative mt-8 h-48 w-full flex items-end justify-between gap-1.5 pt-4 border-b ${
+          isDark ? "border-[#182033]" : "border-[#F0ECE3]"
+        }`}>
           {daysData.map((d, i) => {
             const hRed = filterPageviews ? d.red : 0;
             const hYellow = filterSessions ? d.yellow : 0;
             const hGreen = filterTickets ? d.green : 0;
             const hBlue = filterClicks ? d.blue : 0;
-            const total = hRed + hYellow + hGreen + hBlue;
             const scale = 1.05;
 
             return (
               <div key={i} className="flex-1 flex flex-col items-center group relative h-full justify-end">
-                {/* Column Stack */}
                 <div className="w-full max-w-[14px] rounded-t-sm overflow-hidden flex flex-col-reverse transition-all">
                   {hRed > 0 && <div style={{ height: `${hRed * scale}px` }} className="w-full bg-[#FF0052]" />}
                   {hYellow > 0 && <div style={{ height: `${hYellow * scale}px` }} className="w-full bg-[#FFD400]" />}
@@ -191,10 +197,12 @@ export const OverviewView: React.FC<OverviewViewProps> = ({
         </div>
       </div>
 
-      {/* Recent Alerts Section (Matching Reference Alert Strip in Soft Pink) */}
-      <div className="rounded-2xl bg-white p-6 border border-[#E9E5DC] shadow-[0_1px_4px_rgba(0,0,0,0.03)]">
+      {/* Recent Alerts Section */}
+      <div className={`rounded-2xl p-6 border transition-all ${
+        isDark ? "bg-[#080B12] border-[#182033]" : "bg-white border-[#E9E5DC] shadow-[0_1px_4px_rgba(0,0,0,0.03)]"
+      }`}>
         <div className="flex items-center justify-between mb-4">
-          <h3 className="text-sm font-bold text-[#181D27]">Recent Alerts</h3>
+          <h3 className={`text-sm font-bold ${isDark ? "text-white" : "text-[#181D27]"}`}>Recent Alerts</h3>
           <button
             onClick={onOpenRadar}
             className="flex items-center space-x-1 text-xs font-semibold text-[#0055DA] hover:underline"
@@ -209,18 +217,22 @@ export const OverviewView: React.FC<OverviewViewProps> = ({
             <div
               key={cust.customer_id}
               onClick={() => onSelectCustomer(cust)}
-              className="cursor-pointer flex flex-col sm:flex-row sm:items-center sm:justify-between p-3.5 rounded-xl bg-[#FFF0F4] border border-[#FFE0E8] hover:bg-[#FFEBF1] transition-colors"
+              className={`cursor-pointer flex flex-col sm:flex-row sm:items-center sm:justify-between p-3.5 rounded-xl border transition-colors ${
+                isDark
+                  ? "bg-[#14080D] border-[#2C1019] hover:bg-[#1C0B12]"
+                  : "bg-[#FFF0F4] border-[#FFE0E8] hover:bg-[#FFEBF1]"
+              }`}
             >
               <div className="flex items-center space-x-3">
                 <span className="h-2 w-2 rounded-full bg-[#FF0052] flex-shrink-0" />
                 <div className="text-xs">
-                  <span className="font-bold text-[#181D27]">{cust.customer_id}</span>
-                  <span className="text-[#535862] ml-2">
+                  <span className={`font-bold font-mono ${isDark ? "text-white" : "text-[#181D27]"}`}>{cust.customer_id}</span>
+                  <span className={`ml-2 ${isDark ? "text-slate-300" : "text-[#535862]"}`}>
                     Health score dropped to <strong className="text-[#FF0052] font-semibold">{Math.round((1 - cust.churn_probability) * 100)}</strong> • {cust.top_risk_driver} • {cust.contract_type}
                   </span>
                 </div>
               </div>
-              <span className="text-[11px] text-[#535862] mt-1 sm:mt-0 font-medium">
+              <span className={`text-[11px] mt-1 sm:mt-0 font-medium ${isDark ? "text-slate-400" : "text-[#535862]"}`}>
                 {idx === 0 ? "2 hours ago" : idx === 1 ? "5 hours ago" : "1 day ago"}
               </span>
             </div>
@@ -228,16 +240,18 @@ export const OverviewView: React.FC<OverviewViewProps> = ({
         </div>
       </div>
 
-      {/* Global SHAP Drivers Matrix */}
-      <div className="rounded-2xl bg-white p-6 border border-[#E9E5DC] shadow-[0_1px_4px_rgba(0,0,0,0.03)]">
+      {/* Global SHAP Drivers */}
+      <div className={`rounded-2xl p-6 border transition-all ${
+        isDark ? "bg-[#080B12] border-[#182033]" : "bg-white border-[#E9E5DC] shadow-[0_1px_4px_rgba(0,0,0,0.03)]"
+      }`}>
         <div className="flex items-center justify-between mb-4">
           <div>
-            <h3 className="text-sm font-bold text-[#181D27]">Key Churn Risk Catalysts (SHAP Feature Importance)</h3>
-            <p className="text-xs text-[#535862] mt-0.5">
+            <h3 className={`text-sm font-bold ${isDark ? "text-white" : "text-[#181D27]"}`}>Key Churn Risk Catalysts (SHAP Feature Importance)</h3>
+            <p className={`text-xs mt-0.5 ${isDark ? "text-slate-400" : "text-[#535862]"}`}>
               Identified behavioral patterns that accelerate account churn vs anchors that protect retention.
             </p>
           </div>
-          <span className="text-xs font-mono text-[#535862]">Mean |SHAP|</span>
+          <span className={`text-xs font-mono ${isDark ? "text-slate-400" : "text-[#535862]"}`}>Mean |SHAP|</span>
         </div>
 
         <div className="space-y-3 mt-4">
@@ -251,15 +265,15 @@ export const OverviewView: React.FC<OverviewViewProps> = ({
             { name: "Monthly Charges (> $75)", impact: 44, category: "Pricing", color: "#00C68D" },
           ].map((feat, i) => (
             <div key={i} className="flex items-center text-xs">
-              <span className="w-56 truncate font-medium text-[#181D27]">{feat.name}</span>
-              <span className="w-20 text-[10px] font-mono text-[#535862] uppercase">{feat.category}</span>
-              <div className="flex-1 mx-3 h-2 rounded-full bg-[#F3F0E6] overflow-hidden">
+              <span className={`w-56 truncate font-medium ${isDark ? "text-white" : "text-[#181D27]"}`}>{feat.name}</span>
+              <span className={`w-20 text-[10px] font-mono uppercase ${isDark ? "text-slate-400" : "text-[#535862]"}`}>{feat.category}</span>
+              <div className={`flex-1 mx-3 h-2 rounded-full overflow-hidden ${isDark ? "bg-[#141A28]" : "bg-[#F3F0E6]"}`}>
                 <div
                   className="h-full rounded-full transition-all"
                   style={{ width: `${feat.impact}%`, backgroundColor: feat.color }}
                 />
               </div>
-              <span className="w-12 text-right font-mono font-bold text-[#181D27]">{feat.impact}%</span>
+              <span className={`w-12 text-right font-mono font-bold ${isDark ? "text-white" : "text-[#181D27]"}`}>{feat.impact}%</span>
             </div>
           ))}
         </div>

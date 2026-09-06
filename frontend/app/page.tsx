@@ -25,6 +25,9 @@ export default function Home() {
   const [activeTab, setActiveTab] = useState<"overview" | "radar" | "drift">("overview");
   const [apiOnline, setApiOnline] = useState<boolean>(true);
   const [isSimulatorOpen, setIsSimulatorOpen] = useState<boolean>(false);
+  
+  // Pure Dark (Black Matter) default
+  const [isDark, setIsDark] = useState<boolean>(true);
 
   // Customer List State
   const [customers, setCustomers] = useState<Customer[]>([]);
@@ -130,7 +133,9 @@ export default function Home() {
   const highRiskCohort = customers.filter((c) => c.risk_tier === "HIGH");
 
   return (
-    <div className="min-h-screen bg-[#F8F6F0] text-[#181D27] flex flex-col">
+    <div className={`min-h-screen transition-colors duration-200 flex flex-col ${
+      isDark ? "bg-[#000000] text-white" : "bg-[#F8F6F0] text-[#181D27]"
+    }`}>
       {/* Top Header */}
       <Navbar
         activeTab={activeTab}
@@ -138,17 +143,27 @@ export default function Home() {
         onOpenSimulator={() => setIsSimulatorOpen(true)}
         apiOnline={apiOnline}
         driftStatus={driftData?.latest_report.overall_status || "STABLE"}
+        isDark={isDark}
+        onToggleTheme={() => setIsDark(!isDark)}
       />
 
-      {/* Main Elevated Card Canvas with Window Dots (Matching Reference Image) */}
+      {/* Main Elevated Card Canvas with Window Dots */}
       <main className="flex-1 mx-auto w-full max-w-[1580px] px-4 sm:px-6 lg:px-8 py-6">
-        <div className="rounded-3xl bg-[#FAF9F5] border border-[#E9E5DC] shadow-[0_4px_24px_rgba(0,0,0,0.03)] p-6 sm:p-8">
+        <div className={`rounded-3xl border p-6 sm:p-8 transition-colors duration-200 ${
+          isDark
+            ? "bg-[#04060A] border-[#182033] shadow-[0_4px_32px_rgba(0,0,0,0.6)]"
+            : "bg-[#FAF9F5] border-[#E9E5DC] shadow-[0_4px_24px_rgba(0,0,0,0.03)]"
+        }`}>
           {/* Window Header Dots */}
-          <div className="flex items-center space-x-2 pb-6 mb-6 border-b border-[#EBE7DF]">
+          <div className={`flex items-center space-x-2 pb-6 mb-6 border-b ${
+            isDark ? "border-[#141A28]" : "border-[#EBE7DF]"
+          }`}>
             <span className="h-3 w-3 rounded-full bg-[#FF5F56] inline-block" />
             <span className="h-3 w-3 rounded-full bg-[#FFBD2E] inline-block" />
             <span className="h-3 w-3 rounded-full bg-[#27C93F] inline-block" />
-            <span className="text-[11px] font-mono text-[#535862] ml-2">churnradar.internal / copilot-dashboard</span>
+            <span className={`text-[11px] font-mono ml-2 ${isDark ? "text-slate-400" : "text-[#535862]"}`}>
+              churnradar.internal / copilot-dashboard {isDark ? "• [pure-dark / black-matter]" : ""}
+            </span>
           </div>
 
           {activeTab === "overview" && (
@@ -160,6 +175,7 @@ export default function Home() {
               highRiskCustomers={highRiskCohort}
               onSelectCustomer={(cust) => setSelectedCustomer(cust)}
               onOpenRadar={() => setActiveTab("radar")}
+              isDark={isDark}
             />
           )}
 
@@ -179,6 +195,7 @@ export default function Home() {
               order={order}
               onSortChange={handleSortChange}
               onSelectCustomer={(cust) => setSelectedCustomer(cust)}
+              isDark={isDark}
             />
           )}
 
@@ -186,6 +203,7 @@ export default function Home() {
             <DriftMonitorView
               driftData={driftData}
               onRefreshDrift={loadDriftData}
+              isDark={isDark}
             />
           )}
         </div>
@@ -195,17 +213,21 @@ export default function Home() {
       <CustomerDrawer
         customer={selectedCustomer}
         onClose={() => setSelectedCustomer(null)}
+        isDark={isDark}
       />
 
       {/* What-If Simulator Sandbox Modal */}
       <SimulatorModal
         isOpen={isSimulatorOpen}
         onClose={() => setIsSimulatorOpen(false)}
+        isDark={isDark}
       />
 
       {/* Footer */}
-      <footer className="py-6 text-center text-xs text-[#535862] border-t border-[#EBE7DF]">
-        <p>ChurnRadar • Explainable AI Churn Prediction • XGBoost • SHAP • KS-Test & PSI Drift Monitoring</p>
+      <footer className={`py-6 text-center text-xs border-t transition-colors ${
+        isDark ? "bg-[#000000] border-[#141A28] text-slate-400" : "bg-[#F8F6F0] border-[#EBE7DF] text-[#535862]"
+      }`}>
+        <p>ChurnRadar • Pure Dark Black Matter • XGBoost • SHAP • KS-Test & PSI Drift Monitoring</p>
       </footer>
     </div>
   );

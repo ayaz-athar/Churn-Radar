@@ -25,7 +25,7 @@ Most churn prediction demos stop at reporting generic test accuracy on static CS
 - **Production Rigor**: Mitigates class imbalance with **SMOTE** on training splits, optimizes hyperparameters via **Stratified 5-Fold Cross-Validation**, and evaluates on **ROC-AUC (0.866)**, **PR-AUC (0.634)**, Precision, Recall, and F1.
 - **Statistical Drift Monitoring**: Tracks continuous and discrete distribution divergence against training baselines via two-sample **Kolmogorov-Smirnov tests** and **Population Stability Index (PSI)**.
 - **Dual-Audit Logging**: Logs raw HTTP JSON payloads and structured prediction outcomes to SQLite for audit compliance and retraining datasets.
-- **Executive Command Center**: A dark-mode dashboard built with **Next.js 14, TailwindCSS, and Framer Motion** with an interactive "What-If" simulation sandbox.
+- **Executive Command Center**: A tailored dashboard built with **Next.js 14, TailwindCSS, and Framer Motion** featuring a **Pure Dark 'Black Matter' OLED theme** (`#000000` pitch canvas, `#04060A` cards, glowing `#182033` contours) with quick light mode toggle, distinctive signal palette (`#FF0052`, `#FFD400`, `#00C68D`, `#0055DA`), and an interactive "What-If" simulation sandbox.
 
 ---
 
